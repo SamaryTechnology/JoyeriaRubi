@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joyería   |   Joyeria Artesanal</title>
+    
+    <!-- Tailwind CSS para diseño moderno y adaptable -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Playfair Display (Serif de lujo) y Lato (Sans-serif limpia) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome para iconos elegantes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Configuración de paleta de colores y tipografía en Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ivory: '#FAF8F5',      // Fondo principal crema/marfil suave
+                        ivoryDark: '#F2EFE9',  // Fondo secundario sutil
+                        charcoal: '#1A1A1A',   // Negro carbón para textos principales
+                        warmGray: '#6E6A63',   // Gris cálido para descripciones
+                        gold: '#C5A059',       // Dorado elegante para acentos
+                        goldHover: '#B08D47',  // Dorado más profundo al pasar el cursor
+                    },
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'serif'],
+                        sans: ['"Lato"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Estilos personalizados sutiles para animaciones y scrollbar -->
+    <style>
+        body {
+            background-color: #FAF8F5;
+            color: #1A1A1A;
+            font-family: 'Lato', sans-serif;
+        }
+
+        /* Efecto de zoom suave en las fotografías de productos */
+        .product-card:hover .product-img {
+            transform: scale(1.06);
+        }
+
+        /* Barra de desplazamiento minimalista */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #FAF8F5;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #D6D1C7;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #C5A059;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-gold selection:text-white flex flex-col min-h-screen">
+
+    <!-- =====================================================================
+         1. BARRA DE NAVEGACIÓN SUPERIOR (NAVBAR)
+    ====================================================================== -->
+    <header class="sticky top-0 z-40 bg-ivory/95 backdrop-blur-md border-b border-stone-200/80 transition-all">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20 gap-4">
+                
+                <!-- Botón Menú Móvil -->
+                <button id="mobile-menu-btn" class="md:hidden p-2 text-charcoal hover:text-gold transition-colors" aria-label="Abrir menú">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+
+                <!-- Logo de la Marca -->
+                <a href="#" onclick="resetFilters()" class="flex flex-col items-center md:items-start group">
+                    <span class="font-serif text-2xl sm:text-3xl tracking-[0.2em] font-semibold text-charcoal group-hover:text-gold transition-colors">
+                        Rubi
+                    </span>
+                    <span class="text-[10px] tracking-[0.35em] uppercase text-warmGray -mt-1">
+                        Joyería
+                    </span>
+                </a>
+
+                <!-- Enlaces Rápidos de Categoría (Escritorio) -->
+                <nav class="hidden md:flex items-center space-x-8">
+                    <button onclick="filterByCategoryNav('Todos')" class="nav-link text-sm uppercase tracking-widest text-charcoal hover:text-gold transition-colors font-medium">Colecciones</button>
+                    <button onclick="filterByCategoryNav('Anillos')" class="nav-link text-sm uppercase tracking-widest text-charcoal hover:text-gold transition-colors font-medium">Anillos</button>
+                    <button onclick="filterByCategoryNav('Collares')" class="nav-link text-sm uppercase tracking-widest text-charcoal hover:text-gold transition-colors font-medium">Collares</button>
+                    <button onclick="filterByCategoryNav('Aretes')" class="nav-link text-sm uppercase tracking-widest text-charcoal hover:text-gold transition-colors font-medium">Aretes</button>
+                    <button onclick="filterByCategoryNav('Pulseras')" class="nav-link text-sm uppercase tracking-widest text-charcoal hover:text-gold transition-colors font-medium">Pulseras</button>
+                </nav>
+
+                <!-- Buscador en tiempo real + Carrito -->
+                <div class="flex items-center space-x-3 sm:space-x-5">
+                    <!-- Barra de búsqueda (Escritorio) -->
+                    <div class="relative hidden sm:block">
+                        <input 
+                            type="text" 
+                            id="search-input" 
+                            placeholder="Buscar pieza..." 
+                            class="w-44 lg:w-60 pl-9 pr-4 py-2 text-sm bg-white border border-stone-200 rounded-full focus:outline-none focus:border-gold transition-colors placeholder-warmGray/70"
+                        >
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-warmGray text-xs"></i>
+                    </div>
+
+                    <!-- Botón del Carrito -->
+                    <button id="open-cart-btn" class="relative p-2.5 text-charcoal hover:text-gold transition-colors rounded-full hover:bg-ivoryDark" aria-label="Ver carrito de compras">
+                        <i class="fa-solid fa-bag-shopping text-xl"></i>
+                        <span id="cart-badge" class="absolute top-0.5 right-0.5 bg-gold text-white text-[11px] font-bold w-5 h-5 flex items-center justify-center rounded-full shadow-sm">
+                            0
+                        </span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Barra de búsqueda móvil -->
+            <div class="pb-3 sm:hidden">
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        id="search-input-mobile" 
+                        placeholder="Buscar anillos, oro 18k, diamantes..." 
+                        class="w-full pl-9 pr-4 py-2 text-sm bg-white border border-stone-200 rounded-full focus:outline-none focus:border-gold"
+                    >
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-warmGray text-xs"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Menú Desplegable Móvil -->
+        <div id="mobile-menu" class="hidden md:hidden bg-ivory border-b border-stone-200 px-6 py-4 space-y-3">
+            <button onclick="filterByCategoryNav('Todos'); toggleMobileMenu()" class="block w-full text-left py-2 text-sm uppercase tracking-widest text-charcoal hover:text-gold">Todas las Colecciones</button>
+            <button onclick="filterByCategoryNav('Anillos'); toggleMobileMenu()" class="block w-full text-left py-2 text-sm uppercase tracking-widest text-charcoal hover:text-gold">Anillos</button>
+            <button onclick="filterByCategoryNav('Collares'); toggleMobileMenu()" class="block w-full text-left py-2 text-sm uppercase tracking-widest text-charcoal hover:text-gold">Collares</button>
+            <button onclick="filterByCategoryNav('Aretes'); toggleMobileMenu()" class="block w-full text-left py-2 text-sm uppercase tracking-widest text-charcoal hover:text-gold">Aretes</button>
+            <button onclick="filterByCategoryNav('Pulseras'); toggleMobileMenu()" class="block w-full text-left py-2 text-sm uppercase tracking-widest text-charcoal hover:text-gold">Pulseras</button>
+        </div>
+    </header>
+
+    <!-- =====================================================================
+         2. SECCIÓN HERO (PORTADA EDITORIAL)
+    ====================================================================== -->
+    <section class="relative bg-ivoryDark overflow-hidden border-b border-stone-200/70">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 lg:py-24">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+                
+                <!-- Columna de Texto Editorial -->
+                <div class="lg:col-span-6 text-center lg:text-left space-y-6">
+                    <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white border border-stone-200/80 shadow-xs">
+                        <span class="w-2 h-2 rounded-full bg-gold"></span>
+                        <span class="text-xs uppercase tracking-[0.2em] text-warmGray font-semibold">Colección Esencia 2026</span>
+                    </div>
+                    
+                    <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl font-normal text-charcoal leading-[1.15]">
+                        El arte eterno de la <span class="italic text-gold">alta joyería</span> artesanal.
+                    </h1>
+                    
+                    <p class="text-warmGray text-base sm:text-lg max-w-xl mx-auto lg:mx-0 font-light leading-relaxed">
+                        Piezas esculpidas a mano en oro macizo de 18 quilates, plata ley 925 y gemas éticamente seleccionadas. Diseñadas para trascender generaciones.
+                    </p>
+                    
+                    <div class="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+                        <a href="#catalogo" class="w-full sm:w-auto px-8 py-3.5 bg-charcoal text-white text-xs uppercase tracking-[0.2em] font-semibold rounded-full hover:bg-gold transition-colors duration-300 shadow-md">
+                            Explorar Catálogo
+                        </a>
+                        <button onclick="filterByMaterialQuick('Oro 18k')" class="w-full sm:w-auto px-8 py-3.5 bg-transparent border border-charcoal text-charcoal text-xs uppercase tracking-[0.2em] font-semibold rounded-full hover:border-gold hover:text-gold transition-colors duration-300">
+                            Ver Oro 18k
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Columna de Imagen Editorial -->
+                <div class="lg:col-span-6">
+                    <div class="relative rounded-2xl overflow-hidden shadow-xl aspect-[4/3] sm:aspect-[16/11] bg-stone-200">
+                        <img 
+                            src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1200&q=85" 
+                            alt="Colección de alta joyería Rubi en oro y diamantes"
+                            onerror="this.src='https://placehold.co/800x600/F2EFE9/1A1A1A?text=AURELIA+Joyer%C3%ADa'"
+                            class="w-full h-full object-cover object-center"
+                        >
+                        <!-- Tarjeta flotante de autenticidad -->
+                        <div class="absolute bottom-4 left-4 right-4 sm:right-auto sm:max-w-xs bg-ivory/95 backdrop-blur-md p-4 rounded-xl border border-stone-200/80 shadow-lg">
+                            <p class="font-serif text-sm text-charcoal font-semibold">Certificado de Pureza</p>
+                            <p class="text-xs text-warmGray mt-0.5">Cada joya incluye garantía vitalicia y estuche de presentación artesanal.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- =====================================================================
+         3. CATÁLOGO INTERACTIVO: FILTROS Y CUADRÍCULA DE PRODUCTOS
+    ====================================================================== -->
+    <main id="catalogo" class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 w-full">
+        
+        <!-- Encabezado de Sección -->
+        <div class="text-center max-w-2xl mx-auto mb-10">
+            <h2 class="font-serif text-3xl sm:text-4xl text-charcoal">Nuestras Creaciones</h2>
+            <div class="w-16 h-0.5 bg-gold mx-auto my-4"></div>
+            <p class="text-warmGray text-sm sm:text-base font-light">
+                Filtra por categoría o metal precioso para encontrar la pieza perfecta para cada momento inolvidable.
+            </p>
+        </div>
+
+        <!-- Barra de Controles: Categorías, Materiales y Ordenamiento -->
+        <div class="bg-white p-4 sm:p-6 rounded-2xl border border-stone-200/80 shadow-xs mb-10 space-y-5">
+            
+            <!-- Fila 1: Filtro por Categoría -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-stone-100">
+                <div class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 no-scrollbar" id="category-filters">
+                    <span class="text-xs uppercase tracking-wider text-warmGray mr-2 font-semibold shrink-0">Categoría:</span>
+                    <button data-category="Todos" class="cat-btn active px-4 py-2 rounded-full text-xs uppercase tracking-wider font-semibold transition-all bg-charcoal text-white shrink-0">Todos</button>
+                    <button data-category="Anillos" class="cat-btn px-4 py-2 rounded-full text-xs uppercase tracking-wider font-semibold transition-all bg-ivory text-charcoal hover:bg-stone-200 shrink-0">Anillos</button>
+                    <button data-category="Collares" class="cat-btn px-4 py-2 rounded-full text-xs uppercase tracking-wider font-semibold transition-all bg-ivory text-charcoal hover:bg-stone-200 shrink-0">Collares</button>
+                    <button data-category="Aretes" class="cat-btn px-4 py-2 rounded-full text-xs uppercase tracking-wider font-semibold transition-all bg-ivory text-charcoal hover:bg-stone-200 shrink-0">Aretes</button>
+                    <button data-category="Pulseras" class="cat-btn px-4 py-2 rounded-full text-xs uppercase tracking-wider font-semibold transition-all bg-ivory text-charcoal hover:bg-stone-200 shrink-0">Pulseras</button>
+                </div>
+
+                <!-- Contador de resultados -->
+                <div class="text-xs text-warmGray font-medium shrink-0">
+                    Mostrando <span id="product-count" class="text-charcoal font-bold">0</span> piezas exclusivas
+                </div>
+            </div>
+
+            <!-- Fila 2: Filtro por Material y Ordenamiento por Precio -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <!-- Botones de Material -->
+                <div class="flex flex-wrap items-center gap-2" id="material-filters">
+                    <span class="text-xs uppercase tracking-wider text-warmGray mr-1 font-semibold">Material:</span>
+                    <button data-material="Todos" class="mat-btn active px-3.5 py-1.5 rounded-full text-xs font-medium border border-gold bg-gold/10 text-charcoal transition-all">Todos los metales</button>
+                    <button data-material="Oro 18k" class="mat-btn px-3.5 py-1.5 rounded-full text-xs font-medium border border-stone-200 text-warmGray hover:border-gold transition-all">
+                        <span class="inline-block w-2 h-2 rounded-full bg-[#D4AF37] mr-1.5"></span>Oro 18k
+                    </button>
+                    <button data-material="Plata 925" class="mat-btn px-3.5 py-1.5 rounded-full text-xs font-medium border border-stone-200 text-warmGray hover:border-gold transition-all">
+                        <span class="inline-block w-2 h-2 rounded-full bg-[#C0C0C0] mr-1.5"></span>Plata 925
+                    </button>
+                    <button data-material="Oro Rosa" class="mat-btn px-3.5 py-1.5 rounded-full text-xs font-medium border border-stone-200 text-warmGray hover:border-gold transition-all">
+                        <span class="inline-block w-2 h-2 rounded-full bg-[#E0A99A] mr-1.5"></span>Oro Rosa
+                    </button>
+                </div>
+
+                <!-- Selector de Ordenamiento -->
+                <div class="flex items-center gap-2">
+                    <label for="sort-select" class="text-xs uppercase tracking-wider text-warmGray font-semibold shrink-0">Ordenar:</label>
+                    <select id="sort-select" class="bg-ivory border border-stone-200 text-charcoal text-xs rounded-full px-4 py-2 focus:outline-none focus:border-gold cursor-pointer">
+                        <option value="featured">Destacados</option>
+                        <option value="price-asc">Precio: Menor a Mayor</option>
+                        <option value="price-desc">Precio: Mayor a Menor</option>
+                        <option value="name-asc">Nombre: A - Z</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cuadrícula de Productos (Se llena dinámicamente con JavaScript) -->
+        <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
+            <!-- Tarjetas generadas por JS -->
+        </div>
+
+        <!-- Estado vacío cuando no hay coincidencias -->
+        <div id="empty-state" class="hidden text-center py-16 px-4 bg-white rounded-2xl border border-stone-200/80">
+            <i class="fa-regular fa-gem text-4xl text-gold/60 mb-4"></i>
+            <h3 class="font-serif text-2xl text-charcoal mb-2">No encontramos joyas con esos filtros</h3>
+            <p class="text-warmGray text-sm max-w-md mx-auto mb-6">Intenta cambiar el metal precioso, seleccionar otra categoría o limpiar tu búsqueda actual.</p>
+            <button onclick="resetFilters()" class="px-6 py-2.5 bg-charcoal text-white text-xs uppercase tracking-widest rounded-full hover:bg-gold transition-colors">
+                Restablecer Filtros
+            </button>
+        </div>
+
+    </main>
+
+    <!-- =====================================================================
+         4. PIE DE PÁGINA (FOOTER)
+    ====================================================================== -->
+    <footer class="bg-charcoal text-ivory/90 mt-16 border-t border-stone-800">
+        <!-- Franja de Garantías -->
+        <div class="border-b border-stone-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                <div class="space-y-2">
+                    <i class="fa-solid fa-certificate text-gold text-2xl"></i>
+                    <h4 class="font-serif text-lg text-white">Autenticidad Certificada</h4>
+                    <p class="text-xs text-stone-400 max-w-xs mx-auto leading-relaxed">Todas nuestras piezas están quintadas y acompañadas de certificado de pureza de metales y gemas.</p>
+                </div>
+                <div class="space-y-2">
+                    <i class="fa-solid fa-shield-halved text-gold text-2xl"></i>
+                    <h4 class="font-serif text-lg text-white">Envío Asegurado</h4>
+                    <p class="text-xs text-stone-400 max-w-xs mx-auto leading-relaxed">Entregas discretas con seguro al 100% hasta la puerta de tu hogar en todo México.</p>
+                </div>
+                <div class="space-y-2">
+                    <i class="fa-solid fa-gift text-gold text-2xl"></i>
+                    <h4 class="font-serif text-lg text-white">Empaque de Lujo</h4>
+                    <p class="text-xs text-stone-400 max-w-xs mx-auto leading-relaxed">Cada joya se presenta en nuestro estuche insignia de gamuza marfil listo para obsequiar.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enlaces y Contacto -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="space-y-4">
+                <div>
+                    <span class="font-serif text-2xl tracking-[0.2em] font-semibold text-white block">Rubi</span>
+                    <span class="text-[10px] tracking-[0.35em] uppercase text-gold block">Joyería</span>
+                </div>
+                <p class="text-xs text-stone-400 leading-relaxed">
+                    Orfebrería contemporánea creada con pasión, precisión y respeto por los materiales más nobles de la tierra.
+                </p>
+            </div>
+
+            <div>
+                <h5 class="text-xs uppercase tracking-[0.2em] text-gold font-semibold mb-4">Colecciones</h5>
+                <ul class="space-y-2.5 text-xs text-stone-400">
+                    <li><button onclick="filterByCategoryNav('Anillos')" class="hover:text-white transition-colors">Anillos de Compromiso y Solitarios</button></li>
+                    <li><button onclick="filterByCategoryNav('Collares')" class="hover:text-white transition-colors">Collares y Gargantillas</button></li>
+                    <li><button onclick="filterByCategoryNav('Aretes')" class="hover:text-white transition-colors">Aretes y Broqueles</button></li>
+                    <li><button onclick="filterByCategoryNav('Pulseras')" class="hover:text-white transition-colors">Pulseras y Brazaletes</button></li>
+                </ul>
+            </div>
+
+            <div>
+                <h5 class="text-xs uppercase tracking-[0.2em] text-gold font-semibold mb-4">Atención al Cliente</h5>
+                <ul class="space-y-2.5 text-xs text-stone-400">
+                    <li><a href="#catalogo" class="hover:text-white transition-colors">Guía de Tallas de Anillos</a></li>
+                    <li><a href="#catalogo" class="hover:text-white transition-colors">Cuidado de Oro y Plata</a></li>
+                    <li><a href="#catalogo" class="hover:text-white transition-colors">Política de Cambios y Garantía</a></li>
+                    <li><a href="#catalogo" class="hover:text-white transition-colors">Citas Privadas en Boutique</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h5 class="text-xs uppercase tracking-[0.2em] text-gold font-semibold mb-4">Boutique & Contacto</h5>
+                <ul class="space-y-2.5 text-xs text-stone-400">
+                    <li><i class="fa-solid fa-location-dot text-gold mr-2"></i>Monterrey, NL</li>
+                    <li><i class="fa-solid fa-phone text-gold mr-2"></i>8134190597</li>
+                    <li><i class="fa-solid fa-envelope text-gold mr-2"></i>joyeriaRubi@gmail.com</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="border-t border-stone-800/80 py-6 text-center text-xs text-stone-500">
+            &copy; 2026 Rubi Joyería. Todos los derechos reservados. Precios expresados en Pesos Mexicanos (MXN).
+        </div>
+    </footer>
+
+    <!-- =====================================================================
+         5. MODAL DE VISTA RÁPIDA (DETALLES DE LA JOYA)
+    ====================================================================== -->
+    <div id="quickview-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-charcoal/60 backdrop-blur-xs transition-opacity">
+        <div class="bg-ivory rounded-2xl max-w-3xl w-full overflow-hidden shadow-2xl border border-stone-200 relative animate-fadeIn">
+            <!-- Botón Cerrar Modal -->
+            <button onclick="closeQuickView()" class="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-white/90 text-charcoal hover:text-gold flex items-center justify-center shadow-md transition-colors" aria-label="Cerrar vista rápida">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <div id="quickview-content" class="grid grid-cols-1 md:grid-cols-2">
+                <!-- Contenido inyectado dinámicamente por JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         6. CARRITO DE COMPRAS LATERAL (DRAWER)
+    ====================================================================== -->
+    <!-- Fondo oscuro detrás del carrito -->
+    <div id="cart-overlay" onclick="closeCart()" class="fixed inset-0 z-50 bg-charcoal/50 backdrop-blur-xs hidden transition-opacity"></div>
+
+    <!-- Panel deslizable derecho -->
+    <aside id="cart-drawer" class="fixed top-0 right-0 z-50 h-full w-full max-w-md bg-ivory shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
+        
+        <!-- Cabecera del Carrito -->
+        <div class="px-6 py-5 bg-white border-b border-stone-200 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <i class="fa-solid fa-bag-shopping text-gold text-lg"></i>
+                <h3 class="font-serif text-xl text-charcoal">Tu Bolsa de Compra</h3>
+            </div>
+            <button onclick="closeCart()" class="p-2 text-warmGray hover:text-charcoal rounded-full hover:bg-ivory transition-colors" aria-label="Cerrar carrito">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+        </div>
+
+        <!-- Lista de Artículos en el Carrito -->
+        <div id="cart-items-container" class="flex-grow overflow-y-auto p-6 space-y-4">
+            <!-- Generado dinámicamente por JS -->
+        </div>
+
+        <!-- Pie del Carrito: Subtotal y Botón de Compra -->
+        <div id="cart-footer" class="p-6 bg-white border-t border-stone-200 space-y-4">
+            <div class="space-y-1.5 text-sm">
+                <div class="flex justify-between text-warmGray">
+                    <span>Envío asegurado</span>
+                    <span class="text-emerald-700 font-medium">Cortesía</span>
+                </div>
+                <div class="flex justify-between items-baseline pt-2 border-t border-stone-100">
+                    <span class="font-serif text-lg text-charcoal">Subtotal</span>
+                    <span id="cart-subtotal" class="font-serif text-xl font-bold text-charcoal">$0 MXN</span>
+                </div>
+            </div>
+
+            <button onclick="checkout()" class="w-full py-3.5 bg-charcoal text-white text-xs uppercase tracking-[0.2em] font-semibold rounded-full hover:bg-gold transition-colors shadow-md flex items-center justify-center gap-2">
+                <span>Finalizar Compra</span>
+                <i class="fa-solid fa-arrow-right text-xs"></i>
+            </button>
+        </div>
+    </aside>
+
+    <!-- =====================================================================
+         7. NOTIFICACIÓN FLOTANTE (TOAST ELEGANTE)
+    ====================================================================== -->
+    <div id="toast-notification" class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="bg-charcoal text-white px-5 py-3.5 rounded-xl shadow-xl border border-gold/40 flex items-center gap-3">
+            <i class="fa-solid fa-check-circle text-gold text-lg"></i>
+            <div>
+                <p id="toast-title" class="text-xs font-semibold uppercase tracking-wider text-gold">Agregado a tu bolsa</p>
+                <p id="toast-message" class="text-xs text-ivory/90 mt-0.5">Pieza añadida correctamente.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         8. LÓGICA JAVASCRIPT (CATÁLOGO, FILTROS, VISTA RÁPIDA Y CARRITO)
+    ====================================================================== -->
+    <script>
+        /**
+         * BASE DE DATOS DE PRODUCTOS (Fácil de editar en Visual Studio Code)
+         * Puedes agregar, modificar o eliminar joyas editando este arreglo.
+         */
+        const jewelryCatalog = [
+            {
+                id: 1,
+                name: "Anillo Solitario Aurora",
+                category: "Anillos",
+                material: "Oro 18k",
+                price: 14850,
+                badge: "Más Vendido",
+                image: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=800&q=80",
+                karats: "Oro Amarillo 18k • Diamante Natural 0.35 ct (Corte Brillante)",
+                dimensions: "Ancho de banda: 1.8 mm • Peso aprox: 3.2 g",
+                description: "Un clásico atemporal engastado a mano con cuatro uñas delicadas que permiten el máximo paso de luz a través del diamante central."
+            },
+            {
+                id: 2,
+                name: "Collar Lágrima Celestial",
+                category: "Collares",
+                material: "Oro 18k",
+                price: 9200,
+                badge: "Nueva Colección",
+                image: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=800&q=80",
+                karats: "Oro Macizo 18k • Zafiro Blanco en corte pera",
+                dimensions: "Cadena ajustable: 40 - 45 cm • Dije: 9 x 6 mm",
+                description: "Cadena tipo veneciana ultradelgada con un colgante en forma de gota que descansa sutilmente sobre la clavícula."
+            },
+            {
+                id: 3,
+                name: "Aretes Perla Barroca Étoile",
+                category: "Aretes",
+                material: "Plata 925",
+                price: 3450,
+                badge: "Artesanal",
+                image: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=800&q=80",
+                karats: "Plata Ley 925 con baño de Rodio • Perlas cultivadas de agua dulce",
+                dimensions: "Largo total: 2.6 cm • Diámetro de perla: 10 mm",
+                description: "Cada perla conserva su silueta orgánica natural, haciendo que cada par de aretes sea irrepetible."
+            },
+            {
+                id: 4,
+                name: "Pulsera Rivière Lumière",
+                category: "Pulseras",
+                material: "Oro Rosa",
+                price: 18500,
+                badge: "Edición Limitada",
+                image: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=800&q=80",
+                karats: "Oro Rosa 18k • 42 Zirconias Suizas de talla brillante",
+                dimensions: "Largo: 17.5 cm • Broche de caja con doble seguro",
+                description: "Flexibilidad absoluta y un destello continuo que envuelve la muñeca con calidez y distinción."
+            },
+            {
+                id: 5,
+                name: "Anillo Entrelazado Infinito",
+                category: "Anillos",
+                material: "Oro Rosa",
+                price: 7890,
+                badge: "",
+                image: "https://images.unsplash.com/photo-1603561591411-07134e71a2a9?auto=format&fit=crop&w=800&q=80",
+                karats: "Oro Rosa 14k • Acabado pulido espejo",
+                dimensions: "Ancho superior: 4.5 mm • Peso aprox: 2.9 g",
+                description: "Dos bandas orgánicas que se funden en un abrazo continuo, simbolizando unión y armonía."
+            },
+            {
+                id: 6,
+                name: "Gargantilla Medallón Solar",
+                category: "Collares",
+                material: "Plata 925",
+                price: 2950,
+                badge: "Favorito",
+                image: "https://images.unsplash.com/photo-1611085583191-a3b181a88401?auto=format&fit=crop&w=800&q=80",
+                karats: "Plata Ley 925 • Grabado en bajo relieve",
+                dimensions: "Cadena: 45 cm • Diámetro del medallón: 16 mm",
+                description: "Inspirada en los antiguos talismanes mediterráneos, ideal para llevar sola o combinada en capas."
+            },
+            {
+                id: 7,
+                name: "Arracadas Clásicas Sculpt",
+                category: "Aretes",
+                material: "Oro 18k",
+                price: 6400,
+                badge: "",
+                image: "https://images.unsplash.com/photo-1630019852942-f89202989a59?auto=format&fit=crop&w=800&q=80",
+                karats: "Oro Amarillo 18k hueco ligero • Poste hipoalergénico",
+                dimensions: "Diámetro exterior: 22 mm • Grosor: 3.5 mm",
+                description: "Diseño arquitectónico ligero que ofrece presencia visual sin generar peso en el lóbulo."
+            },
+            {
+                id: 8,
+                name: "Brazalete Rígido Minimal",
+                category: "Pulseras",
+                material: "Plata 925",
+                price: 4100,
+                badge: "Nuevo",
+                image: "https://images.unsplash.com/photo-1573408301185-9146fe634ad0?auto=format&fit=crop&w=800&q=80",
+                karats: "Plata Ley 925 maciza • Cierre oculto de bisagra",
+                dimensions: "Diámetro interior: 6.0 x 5.0 cm • Grosor: 3 mm",
+                description: "Líneas puras y geometría ovalada que se adapta anatómicamente a la forma de la muñeca."
+            }
+        ];
+
+        // Estado global de la aplicación
+        let state = {
+            category: 'Todos',
+            material: 'Todos',
+            searchQuery: '',
+            sortBy: 'featured',
+            cart: JSON.parse(localStorage.getItem('aurelia_cart')) || []
+        };
+
+        // Formateador de moneda MXN
+        const formatCurrency = (amount) => {
+            return new Intl.NumberFormat('es-MX', {
+                style: 'currency',
+                currency: 'MXN',
+                minimumFractionDigits: 0
+            }).format(amount) + ' MXN';
+        };
+
+        // Inicialización al cargar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            renderProducts();
+            updateCartUI();
+            setupEventListeners();
+        });
+
+        // Configuración de eventos de filtros, búsqueda y botones
+        function setupEventListeners() {
+            // Botones de categoría
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    state.category = e.currentTarget.dataset.category;
+                    updateFilterButtonsUI();
+                    renderProducts();
+                });
+            });
+
+            // Botones de material
+            document.querySelectorAll('.mat-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    state.material = e.currentTarget.dataset.material;
+                    updateFilterButtonsUI();
+                    renderProducts();
+                });
+            });
+
+            // Ordenamiento
+            document.getElementById('sort-select').addEventListener('change', (e) => {
+                state.sortBy = e.target.value;
+                renderProducts();
+            });
+
+            // Búsqueda en tiempo real (Escritorio y Móvil)
+            const handleSearch = (e) => {
+                state.searchQuery = e.target.value.toLowerCase().trim();
+                document.getElementById('search-input').value = e.target.value;
+                document.getElementById('search-input-mobile').value = e.target.value;
+                renderProducts();
+            };
+            document.getElementById('search-input').addEventListener('input', handleSearch);
+            document.getElementById('search-input-mobile').addEventListener('input', handleSearch);
+
+            // Abrir / Cerrar Carrito y Menú Móvil
+            document.getElementById('open-cart-btn').addEventListener('click', openCart);
+            document.getElementById('mobile-menu-btn').addEventListener('click', toggleMobileMenu);
+
+            // Cerrar modal con tecla Escape
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeQuickView();
+                    closeCart();
+                }
+            });
+        }
+
+        // Actualiza los estilos visuales de los botones activos
+        function updateFilterButtonsUI() {
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                if (btn.dataset.category === state.category) {
+                    btn.className = 'cat-btn active px-4 py-2 rounded-full text-xs uppercase tracking-wider font-semibold transition-all bg-charcoal text-white shrink-0';
+                } else {
+                    btn.className = 'cat-btn px-4 py-2 rounded-full text-xs uppercase tracking-wider font-semibold transition-all bg-ivory text-charcoal hover:bg-stone-200 shrink-0';
+                }
+            });
+
+            document.querySelectorAll('.mat-btn').forEach(btn => {
+                if (btn.dataset.material === state.material) {
+                    btn.className = 'mat-btn active px-3.5 py-1.5 rounded-full text-xs font-medium border border-gold bg-gold/15 text-charcoal transition-all';
+                } else {
+                    btn.className = 'mat-btn px-3.5 py-1.5 rounded-full text-xs font-medium border border-stone-200 text-warmGray hover:border-gold transition-all';
+                }
+            });
+        }
+
+        // Navegación rápida desde Header / Footer / Hero
+        function filterByCategoryNav(category) {
+            state.category = category;
+            updateFilterButtonsUI();
+            renderProducts();
+            document.getElementById('catalogo').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function filterByMaterialQuick(material) {
+            state.material = material;
+            updateFilterButtonsUI();
+            renderProducts();
+            document.getElementById('catalogo').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function resetFilters() {
+            state.category = 'Todos';
+            state.material = 'Todos';
+            state.searchQuery = '';
+            state.sortBy = 'featured';
+            document.getElementById('search-input').value = '';
+            document.getElementById('search-input-mobile').value = '';
+            document.getElementById('sort-select').value = 'featured';
+            updateFilterButtonsUI();
+            renderProducts();
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Filtra, ordena y renderiza las tarjetas de productos
+        function renderProducts() {
+            const grid = document.getElementById('products-grid');
+            const emptyState = document.getElementById('empty-state');
+            const countEl = document.getElementById('product-count');
+
+            // 1. Filtrar
+            let filtered = jewelryCatalog.filter(item => {
+                const matchCategory = state.category === 'Todos' || item.category === state.category;
+                const matchMaterial = state.material === 'Todos' || item.material === state.material;
+                const matchSearch = item.name.toLowerCase().includes(state.searchQuery) ||
+                                    item.material.toLowerCase().includes(state.searchQuery) ||
+                                    item.category.toLowerCase().includes(state.searchQuery) ||
+                                    item.description.toLowerCase().includes(state.searchQuery);
+                return matchCategory && matchMaterial && matchSearch;
+            });
+
+            // 2. Ordenar
+            if (state.sortBy === 'price-asc') {
+                filtered.sort((a, b) => a.price - b.price);
+            } else if (state.sortBy === 'price-desc') {
+                filtered.sort((a, b) => b.price - a.price);
+            } else if (state.sortBy === 'name-asc') {
+                filtered.sort((a, b) => a.name.localeCompare(b.name));
+            }
+
+            countEl.textContent = filtered.length;
+
+            // 3. Mostrar estado vacío o tarjetas
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            grid.innerHTML = filtered.map(product => `
+                <article class="product-card bg-white rounded-2xl border border-stone-200/80 overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+                    <div>
+                        <!-- Contenedor de Imagen -->
+                        <div class="relative aspect-square overflow-hidden bg-ivoryDark">
+                            <img 
+                                src="${product.image}" 
+                                alt="${product.name}"
+                                onerror="this.src='https://placehold.co/600x600/F2EFE9/1A1A1A?text=${encodeURIComponent(product.name)}'"
+                                class="product-img w-full h-full object-cover object-center transition-transform duration-700 ease-out"
+                            >
+                            
+                            <!-- Etiquetas superiores -->
+                            <div class="absolute top-3 left-3 flex flex-col gap-1.5">
+                                <span class="px-3 py-1 bg-ivory/95 backdrop-blur-xs text-charcoal text-[10px] uppercase tracking-wider font-semibold rounded-full shadow-xs border border-stone-200/60">
+                                    ${product.material}
+                                </span>
+                                ${product.badge ? `
+                                    <span class="px-3 py-1 bg-gold text-white text-[10px] uppercase tracking-wider font-semibold rounded-full shadow-xs">
+                                        ${product.badge}
+                                    </span>
+                                ` : ''}
+                            </div>
+
+                            <!-- Botón flotante Vista Rápida -->
+                            <button 
+                                onclick="openQuickView(${product.id})"
+                                class="absolute bottom-3 left-1/2 -translate-x-1/2 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 focus:opacity-100 focus:translate-y-0 px-4 py-2 bg-white/95 backdrop-blur-md text-charcoal hover:text-gold text-xs uppercase tracking-wider font-semibold rounded-full shadow-md transition-all duration-300 whitespace-nowrap flex items-center gap-1.5"
+                            >
+                                <i class="fa-regular fa-eye"></i>
+                                <span>Vista Rápida</span>
+                            </button>
+                        </div>
+
+                        <!-- Información de la Pieza -->
+                        <div class="p-5 pb-3">
+                            <p class="text-[11px] uppercase tracking-widest text-warmGray mb-1">${product.category}</p>
+                            <h3 class="font-serif text-lg text-charcoal font-medium group-hover:text-gold transition-colors line-clamp-1">
+                                ${product.name}
+                            </h3>
+                            <p class="font-sans text-base font-bold text-charcoal mt-2">
+                                ${formatCurrency(product.price)}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Botones de Acción -->
+                    <div class="px-5 pb-5 pt-2 flex items-center gap-2">
+                        <button 
+                            onclick="addToCart(${product.id})"
+                            class="flex-1 py-2.5 px-4 bg-charcoal text-white text-xs uppercase tracking-wider font-semibold rounded-full hover:bg-gold transition-colors duration-300 flex items-center justify-center gap-2"
+                        >
+                            <i class="fa-solid fa-plus text-[10px]"></i>
+                            <span>Agregar</span>
+                        </button>
+                        <button 
+                            onclick="openQuickView(${product.id})"
+                            class="md:hidden p-2.5 border border-stone-200 text-charcoal hover:border-gold hover:text-gold rounded-full transition-colors"
+                            aria-label="Ver detalles"
+                        >
+                            <i class="fa-regular fa-eye text-sm"></i>
+                        </button>
+                    </div>
+                </article>
+            `).join('');
+        }
+
+        /* =====================================================================
+           FUNCIONES DE VISTA RÁPIDA (MODAL)
+        ===================================================================== */
+        function openQuickView(productId) {
+            const product = jewelryCatalog.find(p => p.id === productId);
+            if (!product) return;
+
+            const modal = document.getElementById('quickview-modal');
+            const content = document.getElementById('quickview-content');
+
+            content.innerHTML = `
+                <div class="bg-ivoryDark aspect-square md:aspect-auto h-full">
+                    <img 
+                        src="${product.image}" 
+                        alt="${product.name}"
+                        onerror="this.src='https://placehold.co/600x600/F2EFE9/1A1A1A?text=AURELIA'"
+                        class="w-full h-full object-cover"
+                    >
+                </div>
+                <div class="p-6 sm:p-8 flex flex-col justify-between space-y-6">
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-2">
+                            <span class="px-3 py-1 bg-gold/15 text-charcoal text-[11px] uppercase tracking-wider font-semibold rounded-full">
+                                ${product.material}
+                            </span>
+                            <span class="text-xs uppercase tracking-widest text-warmGray">${product.category}</span>
+                        </div>
+
+                        <h3 class="font-serif text-2xl sm:text-3xl text-charcoal">${product.name}</h3>
+                        <p class="text-xl font-bold text-gold">${formatCurrency(product.price)}</p>
+                        
+                        <p class="text-sm text-warmGray leading-relaxed pt-2 border-t border-stone-200">
+                            ${product.description}
+                        </p>
+
+                        <div class="bg-white p-4 rounded-xl border border-stone-200/80 space-y-2 text-xs">
+                            <p class="text-charcoal"><strong class="font-semibold">Especificaciones:</strong> ${product.karats}</p>
+                            <p class="text-charcoal"><strong class="font-semibold">Dimensiones:</strong> ${product.dimensions}</p>
+                        </div>
+                    </div>
+
+                    <div class="pt-2">
+                        <button 
+                            onclick="addToCart(${product.id}); closeQuickView();"
+                            class="w-full py-3.5 bg-charcoal text-white text-xs uppercase tracking-[0.2em] font-semibold rounded-full hover:bg-gold transition-colors shadow-md flex items-center justify-center gap-2"
+                        >
+                            <i class="fa-solid fa-bag-shopping"></i>
+                            <span>Agregar a mi bolsa</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeQuickView() {
+            const modal = document.getElementById('quickview-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        /* =====================================================================
+           FUNCIONES DEL CARRITO DE COMPRAS (DRAWER)
+        ===================================================================== */
+        function addToCart(productId) {
+            const product = jewelryCatalog.find(p => p.id === productId);
+            if (!product) return;
+
+            const existingItem = state.cart.find(item => item.id === productId);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                state.cart.push({ ...product, quantity: 1 });
+            }
+
+            saveCart();
+            updateCartUI();
+            showToast('Pieza agregada', `${product.name} se añadió a tu bolsa.`);
+        }
+
+        function updateQuantity(productId, delta) {
+            const itemIndex = state.cart.findIndex(item => item.id === productId);
+            if (itemIndex === -1) return;
+
+            state.cart[itemIndex].quantity += delta;
+            if (state.cart[itemIndex].quantity <= 0) {
+                state.cart.splice(itemIndex, 1);
+            }
+
+            saveCart();
+            updateCartUI();
+        }
+
+        function removeFromCart(productId) {
+            state.cart = state.cart.filter(item => item.id !== productId);
+            saveCart();
+            updateCartUI();
+        }
+
+        function saveCart() {
+            localStorage.setItem('aurelia_cart', JSON.stringify(state.cart));
+        }
+
+        function updateCartUI() {
+            const badge = document.getElementById('cart-badge');
+            const container = document.getElementById('cart-items-container');
+            const subtotalEl = document.getElementById('cart-subtotal');
+            const footer = document.getElementById('cart-footer');
+
+            const totalItems = state.cart.reduce((sum, item) => sum + item.quantity, 0);
+            const subtotal = state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+            badge.textContent = totalItems;
+            subtotalEl.textContent = formatCurrency(subtotal);
+
+            if (state.cart.length === 0) {
+                footer.classList.add('hidden');
+                container.innerHTML = `
+                    <div class="h-full flex flex-col items-center justify-center text-center py-12 px-4">
+                        <div class="w-16 h-16 rounded-full bg-ivoryDark flex items-center justify-center text-gold mb-4">
+                            <i class="fa-solid fa-bag-shopping text-2xl"></i>
+                        </div>
+                        <h4 class="font-serif text-xl text-charcoal mb-2">Tu bolsa está vacía</h4>
+                        <p class="text-xs text-warmGray max-w-xs mb-6 leading-relaxed">
+                            Explora nuestras colecciones artesanales y selecciona las piezas que formarán parte de tu historia.
+                        </p>
+                        <button onclick="closeCart()" class="px-6 py-2.5 bg-charcoal text-white text-xs uppercase tracking-widest rounded-full hover:bg-gold transition-colors">
+                            Descubrir Joyas
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            footer.classList.remove('hidden');
+            container.innerHTML = state.cart.map(item => `
+                <div class="flex gap-4 bg-white p-3.5 rounded-xl border border-stone-200/80 shadow-2xs">
+                    <img 
+                        src="${item.image}" 
+                        alt="${item.name}"
+                        onerror="this.src='https://placehold.co/150x150/F2EFE9/1A1A1A?text=Joya'"
+                        class="w-20 h-20 object-cover rounded-lg bg-ivoryDark shrink-0"
+                    >
+                    <div class="flex-1 flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start gap-2">
+                                <h4 class="font-serif text-sm text-charcoal font-semibold leading-snug">${item.name}</h4>
+                                <button onclick="removeFromCart(${item.id})" class="text-warmGray hover:text-red-600 transition-colors p-1" aria-label="Eliminar artículo">
+                                    <i class="fa-regular fa-trash-can text-xs"></i>
+                                </button>
+                            </div>
+                            <p class="text-[11px] text-warmGray mt-0.5">${item.material}</p>
+                        </div>
+
+                        <div class="flex items-center justify-between mt-2">
+                            <!-- Controles de cantidad -->
+                            <div class="inline-flex items-center border border-stone-200 rounded-full bg-ivory">
+                                <button onclick="updateQuantity(${item.id}, -1)" class="w-7 h-7 flex items-center justify-center text-charcoal hover:text-gold text-xs" aria-label="Disminuir cantidad">
+                                    <i class="fa-solid fa-minus text-[10px]"></i>
+                                </button>
+                                <span class="px-2.5 text-xs font-semibold text-charcoal">${item.quantity}</span>
+                                <button onclick="updateQuantity(${item.id}, 1)" class="w-7 h-7 flex items-center justify-center text-charcoal hover:text-gold text-xs" aria-label="Aumentar cantidad">
+                                    <i class="fa-solid fa-plus text-[10px]"></i>
+                                </button>
+                            </div>
+
+                            <span class="text-xs font-bold text-charcoal">
+                                ${formatCurrency(item.price * item.quantity)}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openCart() {
+            document.getElementById('cart-overlay').classList.remove('hidden');
+            document.getElementById('cart-drawer').classList.remove('translate-x-full');
+        }
+
+        function closeCart() {
+            document.getElementById('cart-overlay').classList.add('hidden');
+            document.getElementById('cart-drawer').classList.add('translate-x-full');
+        }
+
+        // Simulación elegante de finalización de compra
+        function checkout() {
+            const container = document.getElementById('cart-items-container');
+            const footer = document.getElementById('cart-footer');
+            const orderNumber = 'AUR-' + Math.floor(100000 + Math.random() * 900000);
+
+            state.cart = [];
+            saveCart();
+            document.getElementById('cart-badge').textContent = '0';
+            footer.classList.add('hidden');
+
+            container.innerHTML = `
+                <div class="h-full flex flex-col items-center justify-center text-center py-10 px-4 space-y-4">
+                    <div class="w-16 h-16 rounded-full bg-gold/15 text-gold flex items-center justify-center">
+                        <i class="fa-solid fa-check text-2xl"></i>
+                    </div>
+                    <span class="text-[11px] uppercase tracking-[0.25em] text-gold font-semibold">Pedido Confirmado</span>
+                    <h4 class="font-serif text-2xl text-charcoal">Gracias por elegir Rubi</h4>
+                    <p class="text-xs text-warmGray leading-relaxed max-w-xs">
+                        Hemos registrado tu orden <strong class="text-charcoal">#${orderNumber}</strong>. Nuestros maestros joyeros prepararán tus piezas con su certificado de autenticidad.
+                    </p>
+                    <button onclick="closeCart(); updateCartUI();" class="mt-4 px-7 py-3 bg-charcoal text-white text-xs uppercase tracking-widest rounded-full hover:bg-gold transition-colors">
+                        Volver al Catálogo
+                    </button>
+                </div>
+            `;
+        }
+
+        // Notificación Toast sin usar alert()
+        let toastTimeout;
+        function showToast(title, message) {
+            const toast = document.getElementById('toast-notification');
+            document.getElementById('toast-title').textContent = title;
+            document.getElementById('toast-message').textContent = message;
+
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.add('translate-y-24', 'opacity-0');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
